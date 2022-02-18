@@ -11,8 +11,8 @@
 #define UP_BUTTON 12
 #define DOWN_BUTTON 14
 
-const unsigned long PADDLE_RATE = 33;
-const unsigned long BALL_RATE = 1;
+const unsigned long PADDLE_RATE = 40;
+const unsigned long BALL_RATE = 0;
 const uint8_t PADDLE_HEIGHT = 18;
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
@@ -39,12 +39,18 @@ uint8_t player_score = 0;
 
 void drawScore()
 {
+  display.fillRect(1, 1, 126,15, BLACK);
   display.setTextSize(1.5);
 	display.setTextColor(WHITE);
 	display.setCursor(5, 5);
 	display.print("CPU:");
   //display.print((std::to_string(cpu_score)).c_str());
   display.print(cpu_score);
+
+	display.setCursor(68, 5);
+	display.print("Player:");
+  //display.print((std::to_string(cpu_score)).c_str());
+  display.print(player_score);
 
 }
 
@@ -67,6 +73,7 @@ void setup()
   display.clearDisplay();
   drawCourt();
   display.drawRect(0, 0, 128, 17, WHITE);//score box
+  drawScore();
 
  // while (millis() - start < 2000);
 
@@ -82,6 +89,7 @@ void loop()
   ArduinoOTA.handle();
 
   bool update = false;
+  bool end = false;
   unsigned long time = millis();
 
   static bool up_state = false;
@@ -98,10 +106,18 @@ void loop()
     // Check if we hit the vertical walls
     if (new_x == 0 || new_x == 127)
     {
-      if(new_x == 0)
+      if(new_x == 127){
+        cpu_score++;
+      }else{
+        player_score++;
+      }
       ball_dir_x = -ball_dir_x;
       new_x += 2*(ball_dir_x);
-      
+      drawScore();
+      if(player_score > 9 || cpu_score > 9)
+      {
+        end = true;
+      }
 
     }
 
@@ -131,12 +147,7 @@ void loop()
     ball_x = new_x;
     ball_y = new_y;
 
-    drawScore();
-   // cpu_score++;
-
-
     ball_update += BALL_RATE;
-
     update = true;
   }
 
@@ -181,6 +192,15 @@ void loop()
     update = true;
   }
 
-  if (update)
+  // if(end){//later on make a end animation that does some type of wipe
+ 
+ 
+  //   display.clearDisplay()
+     
+  // }
+
+  if(update)  {
     display.display();
+  }
+
 }
