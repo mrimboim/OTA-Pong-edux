@@ -4,6 +4,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <Adafruit_I2CDevice.h>
+#include <string>
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
@@ -21,13 +22,7 @@ void drawCourt()
   display.drawRect(0, (64-48), 128, 48, WHITE);
 }
 
-void drawScore()
-{
-  display.setTextSize(0.5);
-	display.setTextColor(WHITE);
-	display.setCursor(8, 7);
-	display.println("Hello world!");
-}
+
 
 uint8_t ball_x = 64, ball_y = (48/2);
 uint8_t ball_dir_x = 1, ball_dir_y = 1;
@@ -42,6 +37,16 @@ const uint8_t PLAYER_X = 115;
 uint8_t player_y = 17;
 uint8_t player_score = 0;
 
+void drawScore()
+{
+  display.setTextSize(1.5);
+	display.setTextColor(WHITE);
+	display.setCursor(5, 5);
+	display.print("CPU:");
+  //display.print((std::to_string(cpu_score)).c_str());
+  display.print(cpu_score);
+
+}
 
 void setup()
 {
@@ -93,8 +98,10 @@ void loop()
     // Check if we hit the vertical walls
     if (new_x == 0 || new_x == 127)
     {
+      if(new_x == 0)
       ball_dir_x = -ball_dir_x;
       new_x += 2*(ball_dir_x);
+      
 
     }
 
@@ -123,7 +130,10 @@ void loop()
     display.drawPixel(new_x, new_y, WHITE);
     ball_x = new_x;
     ball_y = new_y;
+
     drawScore();
+   // cpu_score++;
+
 
     ball_update += BALL_RATE;
 
