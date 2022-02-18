@@ -21,6 +21,14 @@ void drawCourt()
   display.drawRect(0, (64-48), 128, 48, WHITE);
 }
 
+void drawScore()
+{
+  display.setTextSize(0.5);
+	display.setTextColor(WHITE);
+	display.setCursor(8, 7);
+	display.println("Hello world!");
+}
+
 uint8_t ball_x = 64, ball_y = (48/2);
 uint8_t ball_dir_x = 1, ball_dir_y = 1;
 unsigned long ball_update;
@@ -28,9 +36,12 @@ unsigned long ball_update;
 unsigned long paddle_update;
 const uint8_t CPU_X = 12;
 uint8_t cpu_y = 17;
+uint8_t cpu_score = 0;
 
 const uint8_t PLAYER_X = 115;
 uint8_t player_y = 17;
+uint8_t player_score = 0;
+
 
 void setup()
 {
@@ -42,8 +53,7 @@ void setup()
   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
   {
     Serial.println(F("SSD1306 allocation failed"));
-    for (;;)
-      ;
+    for (;;);
   }
 
   pinMode(UP_BUTTON, INPUT);
@@ -51,6 +61,7 @@ void setup()
 
   display.clearDisplay();
   drawCourt();
+  display.drawRect(0, 0, 128, 17, WHITE);//score box
 
  // while (millis() - start < 2000);
 
@@ -84,6 +95,7 @@ void loop()
     {
       ball_dir_x = -ball_dir_x;
       new_x += 2*(ball_dir_x);
+
     }
 
     // Check if we hit the horizontal walls.
@@ -111,6 +123,7 @@ void loop()
     display.drawPixel(new_x, new_y, WHITE);
     ball_x = new_x;
     ball_y = new_y;
+    drawScore();
 
     ball_update += BALL_RATE;
 
